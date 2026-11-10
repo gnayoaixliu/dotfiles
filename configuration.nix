@@ -38,6 +38,14 @@
       "herdr"
     ];
     casks = [
+      "visual-studio-code"
+      "handy"
+      "alfred"
+      "raycast"
+      "dash"
+      "obsidian"
+      "google-chrome"
+      "snipaste"
       "wezterm"
       "claude-code"
     ];

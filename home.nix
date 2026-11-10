@@ -35,6 +35,8 @@ in
       push = "git push";
       pull = "git pull";
       m = "git switch main";
+      cc = "claude --dangerously-skip-permissions";
+      co = "codex --full-auto";
     };
   };
 
@@ -71,4 +73,10 @@ in
   home.file.".pi/agent/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/settings.json";
 
+  home.file.".claude/CLAUDE.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
+  home.file.".codex/AGENTS.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
+  home.file.".config/opencode/AGENTS.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
 }

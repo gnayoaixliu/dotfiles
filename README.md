@@ -29,6 +29,7 @@ Running the switch builds:
 - Shell (zsh, aliases, starship prompt)
 - Editor (Neovim config with the rose-pine moon theme)
 - Terminal (WezTerm config with the rose-pine moon theme and dimmed unfocused windows)
+- Agent configs (Claude, Codex, opencode all share one AGENTS.md)
 - Optional Pi theme and local extensions, generic UI settings and model overrides, plus two deliberately pinned third-party Pi packages
 
 ## Prerequisites
@@ -123,7 +124,9 @@ If you don't use it, just remove it from `brews` in your copy.
 
 **Heads-up:**
 
-- Claude, Codex, and opencode instructions are left to each machine's local configuration.
+- `home/AGENTS.md` is a shared agent policy installed for Claude, Codex, and opencode. Review it and customize it for your workflow.
+- The `cc` and `co` aliases in `home.nix` run `claude --dangerously-skip-permissions` and `codex --full-auto`.
+  These skip the tools' normal confirmation prompts.
 
 ## Repo tour
 

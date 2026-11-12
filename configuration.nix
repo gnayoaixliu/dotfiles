@@ -24,20 +24,31 @@
     finder.FXPreferredViewStyle = "Nlsv";  # list view by default
     finder.CreateDesktop = false;          # clean desktop
     trackpad.Clicking = true;              # tap to click
+    trackpad.TrackpadThreeFingerDrag = true; # Accessibility > Pointer Control
+    dock.wvous-br-corner = 13;             # lock screen (bottom right)
+    CustomUserPreferences."com.apple.dock"."wvous-br-modifier" = 1048576; # Command key
   };
   nix-homebrew = {
     enable = true;
     inherit user;
+    autoMigrate = true;
   };
   homebrew = {
     enable = true;
     onActivation.cleanup = "zap";  # remove anything not listed here
     onActivation.autoUpdate = true;
-    onActivation.extraFlags = [ "--force" ];
     brews = [
       "herdr"
     ];
     casks = [
+      "visual-studio-code"
+      "handy"
+      "alfred"
+      "raycast"
+      "dash"
+      "obsidian"
+      "google-chrome"
+      "snipaste"
       "wezterm"
       "claude-code"
     ];

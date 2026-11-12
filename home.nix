@@ -1,4 +1,4 @@
-{ config, pkgs, user, ... }:
+{ config, lib, pkgs, user, ... }:
 
 let
   dotfiles = "${config.home.homeDirectory}/.dotfiles";
@@ -16,21 +16,48 @@ in
     jq        # json on the command line
     lazygit
     neovim
+    zsh-completions
     # the font everything renders in
     nerd-fonts.hack
   ];
   fonts.fontconfig.enable = true;
   home.sessionVariables.EDITOR = "nvim";
 
+  # Free the system-wide Spotlight shortcuts for Alfred and Raycast.
+  home.activation.disableSpotlightKeyboardShortcuts =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      prefs="$HOME/Library/Preferences/com.apple.symbolichotkeys.plist"
+      /usr/libexec/PlistBuddy -c 'Set :AppleSymbolicHotKeys:64:enabled false' "$prefs"
+      /usr/libexec/PlistBuddy -c 'Set :AppleSymbolicHotKeys:65:enabled false' "$prefs"
+      /usr/bin/defaults import com.apple.symbolichotkeys "$prefs"
+      /usr/bin/killall SystemUIServer 2>/dev/null || true
+    '';
+
   programs.zsh = {
     enable = true;
     autosuggestion.enable = true;      # ghost text from history
     syntaxHighlighting.enable = true;  # commands turn green when valid
-    initContent = ''
-      bindkey '^f' autosuggest-accept
+    historySubstringSearch = {
+      enable = true;
+      searchUpKey = [ "^[[A" "^[OA" ];
+      searchDownKey = [ "^[[B" "^[OB" ];
+    };
+    setOptions = [ "AUTO_PUSHD" "PUSHD_IGNORE_DUPS" ];
+    # fzf-tab replaces the plain completion menu, so load after compinit
+    # (order 570) and before autosuggestions wrap the completion widgets.
+    initContent = lib.mkOrder 600 ''
+      source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
     '';
+    plugins = [
+      {
+        name = "you-should-use";
+        src = pkgs.zsh-you-should-use;
+        file = "share/zsh/plugins/you-should-use/you-should-use.plugin.zsh";
+      }
+    ];
     shellAliases = {
       ".." = "cd ..";
+      gst = "git status";
       add = "git add .";
       push = "git push";
       pull = "git pull";

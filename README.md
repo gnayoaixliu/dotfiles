@@ -23,7 +23,7 @@ If you find a bug, please open a GitHub Issue using the bug report template.
 
 Running the switch builds:
 
-- System settings (dark mode, key repeat, dock, Finder, trackpad)
+- System settings (dark mode, key repeat, dock, Finder, trackpad, Spotlight shortcuts freed for Alfred/Raycast)
 - Homebrew apps (casks and CLI tools)
 - Nix user packages (ripgrep, fd, fzf, jq, lazygit, Neovim, Hack Nerd Font)
 - Shell (zsh, aliases, starship prompt)
@@ -43,7 +43,7 @@ Running the switch builds:
 On a brand new Mac, from a bare clone of this repo:
 
 ```sh
-git clone https://github.com/kunchenguid/dotfiles.git
+git clone https://github.com/gnayoaixliu/dotfiles.git
 cd dotfiles
 ```
 
@@ -63,6 +63,8 @@ Change the host label or CPU architecture if needed, and read the Homebrew clean
 3. Checks the `user` configured in `flake.nix` against your actual macOS username, and offers to fix it for you if they differ.
 4. Runs the first `darwin-rebuild switch`.
    It fetches the `darwin-rebuild` tool from the nix-darwin 26.05 release branch, then applies this repo's locked flake config.
+   If Homebrew is already installed, nix-homebrew migrates it while retaining installed packages; the Homebrew cleanup policy below then removes anything not declared in this config.
+   Home Manager backs up any existing files it needs to replace by appending `.backup` to their names.
 
 After that, `darwin-rebuild` exists and you're on the normal workflow below.
 
@@ -93,11 +95,14 @@ No separate build-and-copy step.
 This repo is mine.
 If you clone it, review these before you run `bootstrap.sh`:
 
-- **Username**: run `./bootstrap.sh` (it detects your macOS username and offers to set it) OR change the single `user = "kunchen"` line in `flake.nix`.
+- **Username**: run `./bootstrap.sh` (it detects your macOS username and offers to set it) OR change the single `user = "..."` line in `flake.nix`.
   Everything else (`configuration.nix`, `home.nix`, home directory paths) is threaded from that one variable.
 - **Host label** `"mac"`, in three places: `flake.nix` (the `darwinConfigurations."mac"` name), `rebuild.sh:5` (the `#mac` at the end of the flake reference), and `bootstrap.sh`'s first-switch command (also `#mac`).
   All three have to match.
 - **CPU architecture**, `hostPlatform` in `configuration.nix` (see Prerequisites above).
+
+Spotlight's global shortcuts are disabled so you can assign `⌘Space` to Alfred and `⌥Space` to Raycast in their app settings.
+If macOS still shows the old shortcut state after activation, log out and back in; some user defaults require a re-login to take effect.
 
 **Git identity:** this config deliberately does not set your git name or email.
 Git will stop your first commit and tell you to set them (`git config --global user.name "Your Name"` and `git config --global user.email you@example.com`).
@@ -124,10 +129,9 @@ If you don't use it, just remove it from `brews` in your copy.
 
 **Heads-up:**
 
-- `home/AGENTS.md` is my personal agent policy, and `home.nix` installs it for Claude, Codex, and opencode.
-  If you clone this repo, you'd silently inherit my agent instructions - edit or delete `home/AGENTS.md` if you don't want that.
-- The `cc` and `co` shell aliases in `home.nix` are high-agency shortcuts: `claude --dangerously-skip-permissions` and `codex --full-auto`.
-  They're convenient for me, but know what they do before you use them.
+- `home/AGENTS.md` is a shared agent policy installed for Claude, Codex, and opencode. Review it and customize it for your workflow.
+- The `cc` and `co` aliases in `home.nix` run `claude --dangerously-skip-permissions` and `codex --full-auto`.
+  These skip the tools' normal confirmation prompts.
 
 ## Repo tour
 

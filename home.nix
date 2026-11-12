@@ -42,6 +42,7 @@ in
       searchUpKey = [ "^[[A" "^[OA" ];
       searchDownKey = [ "^[[B" "^[OB" ];
     };
+    setOptions = [ "AUTO_PUSHD" "PUSHD_IGNORE_DUPS" ];
     # fzf-tab replaces the plain completion menu, so load after compinit
     # (order 570) and before autosuggestions wrap the completion widgets.
     initContent = lib.mkOrder 600 ''

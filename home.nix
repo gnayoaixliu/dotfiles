@@ -16,6 +16,7 @@ in
     jq        # json on the command line
     lazygit
     neovim
+    zsh-completions
     # the font everything renders in
     nerd-fonts.hack
   ];
@@ -41,6 +42,18 @@ in
       searchUpKey = [ "^[[A" "^[OA" ];
       searchDownKey = [ "^[[B" "^[OB" ];
     };
+    # fzf-tab replaces the plain completion menu, so load after compinit
+    # (order 570) and before autosuggestions wrap the completion widgets.
+    initContent = lib.mkOrder 600 ''
+      source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
+    '';
+    plugins = [
+      {
+        name = "you-should-use";
+        src = pkgs.zsh-you-should-use;
+        file = "share/zsh/plugins/you-should-use/you-should-use.plugin.zsh";
+      }
+    ];
     shellAliases = {
       ".." = "cd ..";
       gst = "git status";

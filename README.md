@@ -63,6 +63,7 @@ Change the host label or CPU architecture if needed, and read the Homebrew clean
 3. Checks the `user` configured in `flake.nix` against your actual macOS username, and offers to fix it for you if they differ.
 4. Runs the first `darwin-rebuild switch`.
    It fetches the `darwin-rebuild` tool from the nix-darwin 26.05 release branch, then applies this repo's locked flake config.
+   If Homebrew is already installed, nix-homebrew migrates it while retaining installed packages; the Homebrew cleanup policy below then removes anything not declared in this config.
 
 After that, `darwin-rebuild` exists and you're on the normal workflow below.
 

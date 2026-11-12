@@ -43,6 +43,7 @@ in
     };
     shellAliases = {
       ".." = "cd ..";
+      gst = "git status";
       add = "git add .";
       push = "git push";
       pull = "git pull";

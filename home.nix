@@ -1,4 +1,4 @@
-{ config, pkgs, user, ... }:
+{ config, lib, pkgs, user, ... }:
 
 let
   dotfiles = "${config.home.homeDirectory}/.dotfiles";
@@ -21,6 +21,16 @@ in
   ];
   fonts.fontconfig.enable = true;
   home.sessionVariables.EDITOR = "nvim";
+
+  # Free the system-wide Spotlight shortcuts for Alfred and Raycast.
+  home.activation.disableSpotlightKeyboardShortcuts =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      prefs="$HOME/Library/Preferences/com.apple.symbolichotkeys.plist"
+      /usr/libexec/PlistBuddy -c 'Set :AppleSymbolicHotKeys:64:enabled false' "$prefs"
+      /usr/libexec/PlistBuddy -c 'Set :AppleSymbolicHotKeys:65:enabled false' "$prefs"
+      /usr/bin/defaults import com.apple.symbolichotkeys "$prefs"
+      /usr/bin/killall SystemUIServer 2>/dev/null || true
+    '';
 
   programs.zsh = {
     enable = true;

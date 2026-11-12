@@ -23,7 +23,7 @@ If you find a bug, please open a GitHub Issue using the bug report template.
 
 Running the switch builds:
 
-- System settings (dark mode, key repeat, dock, Finder, trackpad)
+- System settings (dark mode, key repeat, dock, Finder, trackpad, Spotlight shortcuts freed for Alfred/Raycast)
 - Homebrew apps (casks and CLI tools)
 - Nix user packages (ripgrep, fd, fzf, jq, lazygit, Neovim, Hack Nerd Font)
 - Shell (zsh, aliases, starship prompt)
@@ -98,6 +98,8 @@ If you clone it, review these before you run `bootstrap.sh`:
 - **Host label** `"mac"`, in three places: `flake.nix` (the `darwinConfigurations."mac"` name), `rebuild.sh:5` (the `#mac` at the end of the flake reference), and `bootstrap.sh`'s first-switch command (also `#mac`).
   All three have to match.
 - **CPU architecture**, `hostPlatform` in `configuration.nix` (see Prerequisites above).
+
+Spotlight's global shortcuts are disabled so you can assign `⌘Space` to Alfred and `⌥Space` to Raycast in their app settings.
 
 **Git identity:** this config deliberately does not set your git name or email.
 Git will stop your first commit and tell you to set them (`git config --global user.name "Your Name"` and `git config --global user.email you@example.com`).

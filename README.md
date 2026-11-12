@@ -102,6 +102,7 @@ If you clone it, review these before you run `bootstrap.sh`:
 - **CPU architecture**, `hostPlatform` in `configuration.nix` (see Prerequisites above).
 
 Spotlight's global shortcuts are disabled so you can assign `⌘Space` to Alfred and `⌥Space` to Raycast in their app settings.
+If macOS still shows the old shortcut state after activation, log out and back in; some user defaults require a re-login to take effect.
 
 **Git identity:** this config deliberately does not set your git name or email.
 Git will stop your first commit and tell you to set them (`git config --global user.name "Your Name"` and `git config --global user.email you@example.com`).

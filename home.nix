@@ -26,9 +26,6 @@ in
     enable = true;
     autosuggestion.enable = true;      # ghost text from history
     syntaxHighlighting.enable = true;  # commands turn green when valid
-    initContent = ''
-      bindkey '^f' autosuggest-accept
-    '';
     shellAliases = {
       ".." = "cd ..";
       add = "git add .";

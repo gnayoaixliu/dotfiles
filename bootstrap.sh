@@ -5,6 +5,12 @@ set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
+if [ "$(id -u)" -eq 0 ]; then
+  echo "Run ./bootstrap.sh as your regular macOS user, without sudo."
+  echo "The script uses sudo only for the darwin-rebuild switch."
+  exit 1
+fi
+
 echo "==> Step 1: Determinate Nix"
 if command -v nix >/dev/null 2>&1; then
   echo "    nix already installed, skipping"

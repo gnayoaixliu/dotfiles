@@ -27,8 +27,19 @@ in
   home.activation.disableSpotlightKeyboardShortcuts =
     lib.hm.dag.entryAfter [ "writeBoundary" ] ''
       prefs="$HOME/Library/Preferences/com.apple.symbolichotkeys.plist"
-      /usr/libexec/PlistBuddy -c 'Set :AppleSymbolicHotKeys:64:enabled false' "$prefs"
-      /usr/libexec/PlistBuddy -c 'Set :AppleSymbolicHotKeys:65:enabled false' "$prefs"
+      if ! /usr/libexec/PlistBuddy -c 'Print :AppleSymbolicHotKeys' "$prefs" >/dev/null 2>&1; then
+        /usr/libexec/PlistBuddy -c 'Add :AppleSymbolicHotKeys dict' "$prefs"
+      fi
+      for key in 64 65; do
+        if ! /usr/libexec/PlistBuddy -c "Print :AppleSymbolicHotKeys:$key" "$prefs" >/dev/null 2>&1; then
+          /usr/libexec/PlistBuddy -c "Add :AppleSymbolicHotKeys:$key dict" "$prefs"
+        fi
+        if /usr/libexec/PlistBuddy -c "Print :AppleSymbolicHotKeys:$key:enabled" "$prefs" >/dev/null 2>&1; then
+          /usr/libexec/PlistBuddy -c "Set :AppleSymbolicHotKeys:$key:enabled false" "$prefs"
+        else
+          /usr/libexec/PlistBuddy -c "Add :AppleSymbolicHotKeys:$key:enabled bool false" "$prefs"
+        fi
+      done
       /usr/bin/defaults import com.apple.symbolichotkeys "$prefs"
       /usr/bin/killall SystemUIServer 2>/dev/null || true
     '';

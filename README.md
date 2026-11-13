@@ -23,7 +23,7 @@ If you find a bug, please open a GitHub Issue using the bug report template.
 
 Running the switch builds:
 
-- System settings (dark mode, key repeat, dock, Finder, trackpad, Spotlight shortcuts freed for Alfred/Raycast)
+- System settings (dark mode, key repeat, dock, Finder, three-finger dragging, clean desktop, Spotlight shortcuts freed for Alfred/Raycast)
 - Homebrew apps (casks and CLI tools)
 - Nix user packages (ripgrep, fd, fzf, jq, lazygit, Neovim, Hack Nerd Font)
 - Shell (zsh, aliases, starship prompt)
@@ -63,8 +63,8 @@ Change the host label or CPU architecture if needed, and read the Homebrew clean
 3. Checks the `user` configured in `flake.nix` against your actual macOS username, and offers to fix it for you if they differ.
 4. Runs the first `darwin-rebuild switch`.
    It fetches the `darwin-rebuild` tool from the nix-darwin 26.05 release branch, then applies this repo's locked flake config.
-   If Homebrew is already installed, nix-homebrew migrates it while retaining installed packages; the Homebrew cleanup policy below then removes anything not declared in this config.
-   Home Manager backs up any existing files it needs to replace by appending `.backup` to their names.
+   If Homebrew is already installed, nix-homebrew migrates it while retaining installed packages; the Homebrew cleanup policy below then removes anything not declared in this config. Cask apps are installed in `~/Applications` so Homebrew does not need to change ownership in `/Applications`.
+   Home Manager backs up any existing files it needs to replace by appending `.hm-backup` to their names.
 
 After that, `darwin-rebuild` exists and you're on the normal workflow below.
 
@@ -122,6 +122,7 @@ programs.git = {
 That means every time you switch, Homebrew removes any package or cask on your machine that isn't listed in the `brews` and `casks` arrays in `configuration.nix`.
 If you already have Homebrew stuff installed that isn't in that list, the first switch will uninstall it.
 Read through `brews` and `casks` before you run `bootstrap.sh` or `rebuild.sh` for the first time, and add anything you want to keep.
+Run `./bootstrap.sh` as your regular macOS user, without `sudo`; it invokes `sudo` itself only for the initial system switch. Homebrew cask apps are placed in `~/Applications`.
 
 **About `herdr`:** it's in the `brews` list.
 It's a real public Homebrew formula (`brew info herdr` finds it in homebrew-core, no tap needed), so it will install fine.

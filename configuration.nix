@@ -24,14 +24,27 @@
     dock = {
       autohide = true;
       magnification = true;
-      largesize = 96;
+      largesize = 128;
     };
     finder.FXPreferredViewStyle = "Nlsv";  # list view by default
     finder.CreateDesktop = false;          # clean desktop
+    finder.ShowExternalHardDrivesOnDesktop = false;
+    finder.ShowRemovableMediaOnDesktop = false;
+    finder.ShowMountedServersOnDesktop = false;
     trackpad.Clicking = true;              # tap to click
-    trackpad.TrackpadThreeFingerDrag = true; # Accessibility > Pointer Control
+    CustomUserPreferences = {
+      # Keep three-finger dragging selected for built-in and Bluetooth trackpads.
+      "com.apple.AppleMultitouchTrackpad" = {
+        Dragging = false;
+        TrackpadThreeFingerDrag = true;
+      };
+      "com.apple.driver.AppleBluetoothMultitouch.trackpad" = {
+        Dragging = false;
+        TrackpadThreeFingerDrag = true;
+      };
+      "com.apple.dock"."wvous-br-modifier" = 1048576; # Command key
+    };
     dock.wvous-br-corner = 13;             # lock screen (bottom right)
-    CustomUserPreferences."com.apple.dock"."wvous-br-modifier" = 1048576; # Command key
   };
   nix-homebrew = {
     enable = true;
@@ -42,6 +55,7 @@
     enable = true;
     onActivation.cleanup = "zap";  # remove anything not listed here
     onActivation.autoUpdate = true;
+    caskArgs.appdir = "~/Applications";
     brews = [
       "herdr"
     ];

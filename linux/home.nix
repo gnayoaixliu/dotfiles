@@ -1,22 +1,32 @@
-{ config, pkgs, user, ... }:
+{ config, lib, pkgs, ... }:
 
 let
-  dotfiles = "${config.home.homeDirectory}/.dotfiles";
+  user = builtins.getEnv "USER";
+  homeDirectory = builtins.getEnv "HOME";
+  dotfiles = "${homeDirectory}/.dotfiles";
 in
-
 {
+  assertions = [
+    {
+      assertion = user != "" && homeDirectory != "";
+      message = "Run Linux Home Manager through linux/bootstrap.sh or linux/rebuild.sh so USER and HOME are available.";
+    }
+  ];
+
   home.username = user;
-  home.homeDirectory = "/Users/${user}";
-  home.stateVersion = "24.11";
+  home.homeDirectory = homeDirectory;
+  home.stateVersion = "26.05";
+  home.backupFileExtension = "backup";
+  programs.home-manager.enable = true;
+
   home.packages = with pkgs; [
-    # cli i use constantly
-    ripgrep   # fast search
-    fd        # fast find
-    fzf       # fuzzy finder
-    jq        # json on the command line
+    ripgrep
+    fd
+    fzf
+    jq
     lazygit
     neovim
-    # the font everything renders in
+    zsh-completions
     nerd-fonts.hack
   ];
   fonts.fontconfig.enable = true;
@@ -24,13 +34,27 @@ in
 
   programs.zsh = {
     enable = true;
-    autosuggestion.enable = true;      # ghost text from history
-    syntaxHighlighting.enable = true;  # commands turn green when valid
-    initContent = ''
-      bindkey '^f' autosuggest-accept
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    historySubstringSearch = {
+      enable = true;
+      searchUpKey = [ "^[[A" "^[OA" ];
+      searchDownKey = [ "^[[B" "^[OB" ];
+    };
+    setOptions = [ "AUTO_PUSHD" "PUSHD_IGNORE_DUPS" ];
+    initContent = lib.mkOrder 600 ''
+      source ${pkgs.zsh-fzf-tab}/share/fzf-tab/fzf-tab.plugin.zsh
     '';
+    plugins = [
+      {
+        name = "you-should-use";
+        src = pkgs.zsh-you-should-use;
+        file = "share/zsh/plugins/you-should-use/you-should-use.plugin.zsh";
+      }
+    ];
     shellAliases = {
       ".." = "cd ..";
+      gst = "git status";
       add = "git add .";
       push = "git push";
       pull = "git pull";
@@ -53,17 +77,16 @@ in
     };
   };
 
-  # Edit-in-place: the real file stays in my repo, ~/.config just points at it.
+  # These are user-authored config files. Keep Herdr's runtime files local.
   home.file.".config/wezterm".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/wezterm";
   home.file.".config/nvim".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/nvim";
-  home.file.".config/herdr".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
+  home.file.".config/herdr/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr/config.toml";
   home.file.".claude/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/settings.json";
 
-  # Keep Pi's credential and runtime state local by linking only authored files and directories.
   home.file.".pi/agent/themes".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/themes";
   home.file.".pi/agent/extensions".source =

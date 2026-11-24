@@ -18,5 +18,8 @@ result-*
 # Pi Calm is a runtime toggle; its local state file is never tracked
 /home/.pi/agent/calm
 
+# Work-managed Pi extension, copied in by update-pi-config; keep out of this public repo
+/home/.pi/agent/extensions/tally-session.ts
+
 # no-mistakes local validation state - never commit in this public repo
 .no-mistakes/

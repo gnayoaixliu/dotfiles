@@ -101,6 +101,26 @@ in
   home.file.".claude/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/settings.json";
 
+  # Name each Herdr space after its first agent's session title.
+  # The script is copied into the Nix store: launchd's bash may not read files under ~/Documents.
+  launchd.agents.herdr-space-names = {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.writeShellApplication {
+          name = "herdr-space-names";
+          runtimeInputs = [ pkgs.jq ];
+          text = builtins.readFile ./home/.config/herdr/space-names.sh;
+        }}/bin/herdr-space-names"
+      ];
+      EnvironmentVariables.PATH = "/opt/homebrew/bin:/usr/bin:/bin"; # herdr comes from Homebrew
+      StartInterval = 10;
+      RunAtLoad = true;
+      StandardOutPath = "${config.home.homeDirectory}/Library/Logs/herdr-space-names.log";
+      StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/herdr-space-names.log";
+    };
+  };
+
   # Keep Pi's credential and runtime state local by linking only authored files and directories.
   home.file.".pi/agent/themes".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/themes";

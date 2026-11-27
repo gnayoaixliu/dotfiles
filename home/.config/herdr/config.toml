@@ -16,6 +16,11 @@ copy_mode  = "prefix+y"  # herdr's copy-mode entry key; copy-mode's own internal
 [ui]
 # Agents panel order: explicit choice of "spaces" (grouped by space, the default) over "priority".
 agent_panel_sort = "spaces"
+tab_bar_position = "bottom"
+# Remaining Tally credits, refreshed every 5 min (cheap: one ~0.5s API call).
+tab_bar_right = [
+  { type = "command", command = "~/.config/herdr/tally-status.sh", interval_seconds = 300, timeout_seconds = 15 },
+]
 
 [ui.toast]
 # Background agent done/needs-input alerts via macOS Notification Center, visible outside Herdr.

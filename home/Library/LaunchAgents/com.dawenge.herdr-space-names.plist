@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Names each Herdr space after its first agent's short session title ("🗂️ TEAMKB").
+  Not managed by Nix. Install or update by copying, not symlinking, then reload:
+    cp home/Library/LaunchAgents/com.dawenge.herdr-space-names.plist ~/Library/LaunchAgents/
+    launchctl bootout gui/$(id -u)/com.dawenge.herdr-space-names
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.dawenge.herdr-space-names.plist
+-->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.dawenge.herdr-space-names</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>-c</string>
+		<string># Rename each Herdr space once to the short session title ("🗂️ TEAMKB") of its first agent pane.
+# Embedded here because launchd's bash got "Operation not permitted" reading a separate script file.
+# A space is renamed once per agent session; later manual renames are kept.
+set -euo pipefail
+
+state_dir="$HOME/.local/state/herdr-space-names"
+state="$state_dir/renamed.tsv" # workspace_id &lt;TAB&gt; agent session path
+mkdir -p "$state_dir"
+touch "$state"
+
+# Herdr not running: nothing to do.
+panes=$(herdr pane list 2&gt;/dev/null) || exit 0
+
+# workspace_id &lt;TAB&gt; session path of the first agent pane in each space.
+masters=$(jq -r '
+  .result.panes
+  | map(select(.agent != null and .agent_session.kind == "path"))
+  | group_by(.workspace_id)[] | .[0]
+  | [.workspace_id, .agent_session.value] | @tsv' &lt;&lt;&lt;"$panes")
+
+# Drop state for spaces or sessions that no longer exist.
+grep -xFf &lt;(printf '%s\n' "$masters") "$state" &gt;"$state.tmp" || true
+mv "$state.tmp" "$state"
+
+while IFS=$'\t' read -r ws session; do
+  [ -n "$ws" ] || continue
+  grep -qxF "$ws"$'\t'"$session" "$state" &amp;&amp; continue
+  # omp keeps the session title record on the first line of the session file.
+  # Keep only the "&lt;emoji&gt; TAG" before the colon; titles without one stay whole.
+  title=$(head -n1 "$session" 2&gt;/dev/null | jq -r 'select(.type == "title") | .title // empty | sub("\\s*:.*"; "")' 2&gt;/dev/null || true)
+  [ -n "$title" ] || continue # title not generated yet; retry next run
+  herdr workspace rename "$ws" "$title" &gt;/dev/null
+  printf '%s\t%s\n' "$ws" "$session" &gt;&gt;"$state"
+  echo "$(date '+%F %T') renamed $ws -&gt; $title"
+done &lt;&lt;&lt;"$masters"
+</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/opt/homebrew/bin:/usr/bin:/bin</string>
+	</dict>
+	<key>StartInterval</key>
+	<integer>10</integer>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>/Users/dawenge/Library/Logs/herdr-space-names.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/dawenge/Library/Logs/herdr-space-names.log</string>
+</dict>
+</plist>

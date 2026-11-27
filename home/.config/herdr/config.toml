@@ -11,6 +11,8 @@ new_tab   = "prefix+c"
 close_tab = "prefix+ampersand"
 workspace_picker = "prefix+w"
 goto             = "prefix+g"
+# Jump to space 1-9 by sidebar position (left Option in WezTerm sends Alt).
+switch_workspace = "alt+1..9"
 copy_mode  = "prefix+y"  # herdr's copy-mode entry key; copy-mode's own internal keys (v/space select, y/Enter copy, q/Esc cancel) aren't configurable
 
 [ui]
